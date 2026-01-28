@@ -1,0 +1,236 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui,
+    -system-ui, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top, #0f172a 0, #020617 50%, #000 100%),
+    radial-gradient(circle at 20% 120%, rgba(56, 189, 248, 0.3), transparent 55%),
+    radial-gradient(circle at 80% 120%, rgba(168, 85, 247, 0.32), transparent 55%);
+  color: #f5f5f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page {
+  width: 100%;
+  max-width: 960px;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.title-group h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.hint {
+  font-size: 13px;
+  color: #d1d5db;
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  padding: 0 6px;
+  margin: 0 2px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid #4b5563;
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 1px 4px rgba(15, 23, 42, 0.65);
+  font-size: 11px;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+}
+
+.game-card {
+  width: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.25), transparent 55%),
+    radial-gradient(circle at top right, rgba(168, 85, 247, 0.25), transparent 55%),
+    linear-gradient(145deg, #020617 0, #020617 45%, #020617 100%);
+  border-radius: 18px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(15, 23, 42, 0.9),
+    0 18px 45px rgba(0, 0, 0, 0.9),
+    0 0 40px rgba(56, 189, 248, 0.18);
+  padding: 18px 20px 20px;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.score-panel {
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.score-panel span span {
+  font-variant-numeric: tabular-nums;
+}
+
+.primary-btn,
+.secondary-btn {
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 6px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease,
+    background 0.1s ease;
+  user-select: none;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #4f46e5, #6366f1, #8b5cf6);
+  color: white;
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.6);
+}
+
+.primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(79, 70, 229, 0.8);
+}
+
+.primary-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.7);
+}
+
+.secondary-btn {
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
+  border: 1px solid rgba(156, 163, 175, 0.6);
+}
+
+.secondary-btn:hover {
+  background: rgba(31, 41, 55, 0.95);
+}
+
+.secondary-btn:active {
+  opacity: 0.9;
+}
+
+.game-wrapper {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.3);
+  background:
+    radial-gradient(circle at top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.98)),
+    repeating-linear-gradient(
+      to right,
+      rgba(15, 23, 42, 0.9),
+      rgba(15, 23, 42, 0.9) 1px,
+      rgba(15, 23, 42, 0.96) 1px,
+      rgba(15, 23, 42, 0.96) 3px
+    );
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: transparent;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    circle at center,
+    rgba(15, 23, 42, 0.94),
+    rgba(15, 23, 42, 0.97)
+  );
+  color: #e5e7eb;
+  text-align: center;
+  backdrop-filter: blur(12px);
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay-content h2 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.overlay-content p {
+  font-size: 14px;
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
+.footer {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .game-card {
+    padding: 14px 12px 16px;
+  }
+
+  #gameCanvas {
+    width: 100%;
+  }
+}
+
