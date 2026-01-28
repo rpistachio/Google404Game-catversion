@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitty Runner Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .game-container {
+            position: relative;
+            width: 800px;
+            height: 400px;
+            background-color: #87ceeb;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .kitty {
+            position: absolute;
+            bottom: 50px;
+            left: 50px;
+            width: 60px;
+            height: 60px;
+            background-color: #ffd700;
+            border-radius: 10px 10px 5px 5px;
+            transition: bottom 0.1s ease, transform 0.1s ease;
+        }
+        .kitty::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 5px;
+            width: 20px;
+            height: 20px;
+            background-color: #ffd700;
+            border-radius: 50% 50% 0 0;
+            transition: transform 0.1s ease;
+        }
+        .kitty::after {
+            content: '';
+            position: absolute;
+            top: -15px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            background-color: #ffd700;
+            border-radius: 50% 50% 0 0;
+            transition: transform 0.1s ease;
+        }
+        .kitty-eyes {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 10px;
+            height: 10px;
+            background-color: black;
+            border-radius: 50%;
+        }
+        .kitty-eyes::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            width: 10px;
+            height: 10px;
+            background-color: black;
+            border-radius: 50%;
+        }
+        .kitty-mouth {
+            position: absolute;
+            bottom: 10px;
+            left: 25px;
+            width: 10px;
+            height: 5px;
+            background-color: black;
+            border-radius: 0 0 5px 5px;
+        }
+        .kitty.jumping {
+            transform: rotate(-10deg);
+        }
+        .kitty.running {
+            animation: run 0.2s infinite alternate;
+        }
+        @keyframes run {
+            0% {
+                transform: translateX(0) translateY(0);
+            }
+            50% {
+                transform: translateX(2px) translateY(-2px);
+            }
+            100% {
+                transform: translateX(0) translateY(0);
+            }
+        }
+        .tree {
+            position: absolute;
+            bottom: 50px;
+            width: 40px;
+            height: 50px;
+            background-color: #228b22;
+            border-radius: 20px 20px 0 0;
+        }
+        .tree::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 12px;
+            width: 16px;
+            height: 8px;
+            background-color: #8b4513;
+            border-radius: 4px;
+        }
+        .tree::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: -5px;
+            width: 10px;
+            height: 10px;
+            background-color: #ffd700;
+            border-radius: 50%;
+        }
+        .cloud {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0.9;
+        }
+        .cloud::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: -10px;
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 50%;
+        }
+        .cloud::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: -10px;
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 50%;
+        }
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 50px;
+            background-color: #8b4513;
+        }
+        .ground::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background-image: radial-gradient(#000000 1px, transparent 1px);
+            background-size: 20px 10px;
+        }
+        .score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #333;
+            display: none;
+        }
+        .game-over h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .game-over button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .game-over button:hover {
+            background-color: #ee5a52;
+        }
+        .hint {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #333;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="kitty">
+            <div class="kitty-eyes"></div>
+            <div class="kitty-mouth"></div>
+        </div>
+        <div class="ground"></div>
+        <div class="score">0</div>
+        <div class="hint">提示：按空格键或点击屏幕跳跃，躲避圣诞树</div>
+        <div class="game-over">
+            <h2>Game Over</h2>
+            <button onclick="restartGame()">Play Again</button>
+        </div>
+    </div>
+    <script>
+        const gameContainer = document.querySelector('.game-container');
+        const kitty = document.querySelector('.kitty');
+        const scoreElement = document.querySelector('.score');
+        const gameOverElement = document.querySelector('.game-over');
+        
+        let score = 0;
+        let gameSpeed = 4;
+        let gameActive = true;
+        let trees = [];
+        let clouds = [];
+        let jumpHeight = 300;
+        let isJumping = false;
+        
+        function createCloud() {
+            const cloud = document.createElement('div');
+            cloud.classList.add('cloud');
+            cloud.style.width = '50px';
+            cloud.style.height = '30px';
+            cloud.style.left = gameContainer.offsetWidth + 'px';
+            cloud.style.top = Math.random() * 150 + 30 + 'px';
+            cloud.style.opacity = 0.9;
+            gameContainer.appendChild(cloud);
+            clouds.push(cloud);
+        }
+        
+        function createTree() {
+            const tree = document.createElement('div');
+            tree.classList.add('tree');
+            const treeHeight = Math.random() * 15 + 35; // 35-50px
+            const treeWidth = Math.random() * 10 + 35; // 35-45px
+            tree.style.left = gameContainer.offsetWidth + 'px';
+            tree.style.height = treeHeight + 'px';
+            tree.style.width = treeWidth + 'px';
+            gameContainer.appendChild(tree);
+            trees.push(tree);
+        }
+        
+        function updateGame() {
+            if (!gameActive) return;
+            
+            score++;
+            scoreElement.textContent = score;
+            
+            // Update trees
+            trees.forEach((tree, index) => {
+                const treeLeft = parseInt(tree.style.left);
+                tree.style.left = (treeLeft - gameSpeed) + 'px';
+                
+                if (treeLeft < -50) {
+                    tree.remove();
+                    trees.splice(index, 1);
+                }
+                
+                // Check collision
+                const kittyRect = kitty.getBoundingClientRect();
+                const treeRect = tree.getBoundingClientRect();
+                
+                if (
+                    kittyRect.left < treeRect.right &&
+                    kittyRect.right > treeRect.left &&
+                    kittyRect.bottom > treeRect.top &&
+                    kittyRect.top < treeRect.bottom
+                ) {
+                    gameOver();
+                }
+            });
+            
+            // Update clouds
+            clouds.forEach((cloud, index) => {
+                const cloudLeft = parseInt(cloud.style.left) || 0;
+                cloud.style.left = (cloudLeft - 1) + 'px';
+                
+                if (cloudLeft < -cloud.offsetWidth) {
+                    cloud.remove();
+                    clouds.splice(index, 1);
+                }
+            });
+            
+            // Increase game speed over time
+            if (score % 100 === 0) {
+                gameSpeed += 0.5;
+            }
+            
+            // Create new trees and clouds
+            if (Math.random() < 0.03) {
+                const treeCount = Math.floor(Math.random() * 2) + 1; // 1-2 trees
+                for (let i = 0; i < treeCount; i++) {
+                    createTree();
+                    // Add spacing between multiple trees
+                    if (i < treeCount - 1) {
+                        const spacing = Math.random() * 30 + 20;
+                        setTimeout(() => {
+                            createTree();
+                        }, spacing);
+                    }
+                }
+            }
+            
+            if (Math.random() < 0.01) {
+                createCloud();
+            }
+            
+            requestAnimationFrame(updateGame);
+        }
+        
+        function jump() {
+            if (!isJumping && gameActive) {
+                isJumping = true;
+                kitty.classList.remove('running');
+                kitty.classList.add('jumping');
+                let jumpCount = 0;
+                const jumpInterval = setInterval(() => {
+                    const currentBottom = parseInt(kitty.style.bottom) || 50;
+                    if (currentBottom < jumpHeight) {
+                        kitty.style.bottom = (currentBottom + 20) + 'px';
+                    } else {
+                        clearInterval(jumpInterval);
+                        let fallCount = 0;
+                        const fallInterval = setInterval(() => {
+                            const currentBottom = parseInt(kitty.style.bottom) || 50;
+                            if (currentBottom > 50) {
+                                kitty.style.bottom = (currentBottom - 20) + 'px';
+                            } else {
+                                clearInterval(fallInterval);
+                                isJumping = false;
+                                kitty.classList.remove('jumping');
+                                kitty.classList.add('running');
+                            }
+                        }, 15);
+                    }
+                }, 15);
+            }
+        }
+        
+        function gameOver() {
+            gameActive = false;
+            gameOverElement.style.display = 'block';
+            kitty.classList.remove('running');
+            kitty.classList.remove('jumping');
+        }
+        
+        function restartGame() {
+            score = 0;
+            gameSpeed = 4;
+            gameActive = true;
+            gameOverElement.style.display = 'none';
+            scoreElement.textContent = score;
+            
+            // Clear existing trees and clouds
+            trees.forEach(tree => tree.remove());
+            clouds.forEach(cloud => cloud.remove());
+            trees = [];
+            clouds = [];
+            
+            // Reset kitty position and animation
+            kitty.style.bottom = '50px';
+            kitty.classList.remove('jumping');
+            kitty.classList.add('running');
+            
+            updateGame();
+        }
+        
+        // Event listeners
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                jump();
+            }
+        });
+        
+        document.addEventListener('click', () => {
+            jump();
+        });
+        
+        // Start game
+        kitty.classList.add('running');
+        updateGame();
+    </script>
+</body>
+</html>
